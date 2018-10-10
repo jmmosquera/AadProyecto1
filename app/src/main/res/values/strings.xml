@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">AadEjercicio1b</string>
+    <string name="mns_Moodle">Visitar Moodle</string>
+    <string name="btn_Login">Guardar Login</string>
+    <string name="req_name">Nombre de usuario</string>
+    <string name="req_pass">Contraseña</string>
+    <string name="save_login">Guardar</string>
+    <string name="user_saved">Has guardado el usuario."</string>
+
+    <string name="getsharedpreferences">Get Shared Preferences</string>
+    <string name="getpreferences">Get Preferences</string>
+    <string name="getdefaultsharedpreferences">Get Default Shared Preferences</string>
+    <string name="archivoSharedPreferences">arShPr</string>
+
+    <string name="usuario">usuario</string>
+    <string name="clave">clave</string>
+    <string name="usuario0">usuario0</string>
+    <string name="clave0">clave0</string>
+    <string name="existe">existe</string>
+</resources>
