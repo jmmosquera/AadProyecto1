@@ -1,5 +1,6 @@
 package jmm.iezv.aadejercicio1b;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,10 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MITAG";
     private Button btMoodle, toLogin;
     private WebView webMoodle;
-    WebAppInterface wai;
+    private EditText etUserName, etPassword;
+    private WebAppInterface wai;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +35,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btMoodle = findViewById(R.id.btModle);
-        toLogin = findViewById(R.id.to_login);
+        etUserName = findViewById(R.id.etUserName);
+        etPassword = findViewById(R.id.etPassword);
         webMoodle = findViewById(R.id.web_moodle);
         webMoodle.getSettings().setJavaScriptEnabled(true);
 
+        etUserName.setText(traerUsuario());
+        etPassword.setText(traerClave());
+
+        String existe = traerExiste();
+        marcarColores(existe);
         eventHandler();
     }
 
@@ -42,15 +52,8 @@ public class MainActivity extends AppCompatActivity {
         btMoodle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideSoftKeyboard(MainActivity.this);
                 visitarMoodle();
-            }
-        });
-
-        //Abrir la actividad de administración de cuentas.
-        toLogin.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                startActivity(new Intent(MainActivity.this, screen_log.class));
             }
         });
     }
@@ -71,6 +74,23 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    //Esta función marcará en verde o rojo la pantalla de login según si la contraseña es o no válida.
+    private void marcarColores(String existe){
+        if(existe.equals("1")){
+            etUserName.setBackgroundColor(getResources().getColor(R.color.successLogin));
+            etPassword.setBackgroundColor(getResources().getColor(R.color.successLogin));
+        }
+        if(existe.equals("0")){
+            etUserName.setBackgroundColor(getResources().getColor(R.color.errorLogin));
+            etPassword.setBackgroundColor(getResources().getColor(R.color.errorLogin));
+        }
+    }
+
     //Accede a un nombre de usuario almacenado en SharedPreferences
     private String traerUsuario(){
         SharedPreferences pref = getSharedPreferences(getString(R.string.archivoSharedPreferences),Context.MODE_PRIVATE);
@@ -85,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         return v;
     }
 
-    //Permite comprobar si una cuenta de usuario existe... Siempre y cuando haya sido almacenada esta información.
+    //Permite comprobar si una cuenta de usuario existe
     private String traerExiste(){
         SharedPreferences pref = getSharedPreferences(getString(R.string.archivoSharedPreferences),Context.MODE_PRIVATE);
         String v = pref.getString(getString(R.string.existe),"");
@@ -94,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Permite abrir moodle desde un webview
     private void visitarMoodle(){
-
+        guardaDatos(etUserName.getText().toString(), etPassword.getText().toString());
         wai = new WebAppInterface();
         webMoodle.addJavascriptInterface(wai, "android");
 
@@ -146,17 +166,18 @@ public class MainActivity extends AppCompatActivity {
                             "   });" +
                             "   boton.click();"+
                             " }";
+                    if(url.equals("http://www.juntadeandalucia.es/averroes/centros-tic/18700098/moodle2/")){
+                        guardaExiste(1);
+                        marcarColores("1");
+                    }else if(url.equals("http://www.juntadeandalucia.es/averroes/centros-tic/18700098/moodle2/login/index.php")){
+                        marcarColores("0");
+                        guardaExiste(0);
+                    }
                     webMoodle.loadUrl("javascript: "+ javaScript);
-
                 }
             });
         }
-
-        //Código innaccesible con el desarrollo actual, pero que podría ser de utilidad en versiones futuras.
-        /*String usero = wai.getUsuario();
-        String claveo = wai.getClave();
-        if(!usero.equals("")&&!claveo.equals("")){
-            guardaDatos(usero, claveo);
-        }*/
     }
+
+
 }
