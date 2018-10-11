@@ -17,4 +17,6 @@
     <string name="usuario0">usuario0</string>
     <string name="clave0">clave0</string>
     <string name="existe">existe</string>
+    <string name="go">IR</string>
+    <string name="req_username">Nombre</string>
 </resources>
